@@ -208,8 +208,16 @@ const deletePost = async (req, res) => {
         message: "No post found with the given ID.",
       });
     }
+
     res.redirect(getPostBasePath(post.status));
   } catch (error) {
+    if (error.code === "INVALID_ID") {
+      return res.status(400).render("errors/400", {
+        statusCode: 400,
+        message: "Invalid Post ID.",
+      });
+    }
+
     if (error.code === "DB_DELETE_FAILED") {
       return res.status(500).render("errors/500", {
         statusCode: 500,

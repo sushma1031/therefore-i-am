@@ -128,27 +128,31 @@ const updatePost = async (id, fields, image) => {
 };
 
 const deletePostById = async (id) => {
-  const post = await Post.findById(id);
-  if (!post) return null;
-
-  if (post.image?.id) {
-    try {
-      await cloudinary.uploader.destroy(post.image.id);
-    } catch (err) {
-      console.error(`Post delete ${id}: Failed to delete image:`, err);
-    }
-  }
-
   try {
-    await post.deleteOne();
+    const deletedPost = await Post.findByIdAndDelete(id);
+    if (!deletedPost) return null;
+
+    if (deletedPost.image?.id) {
+      try {
+        await cloudinary.uploader.destroy(deletedPost.image.id);
+      } catch (err) {
+        console.error(`Cleanup failed for image: ${deletedPost.image.id}:`, err);
+      }
+    }
+
+    return deletedPost;
   } catch (err) {
+    if (err.name === "CastError") {
+      const error = new Error();
+      error.code = "INVALID_ID";
+      throw error;
+    }
+
     console.error(`Post delete ${id}: Failed to delete post from DB:`, err);
     const error = new Error();
     error.code = "DB_DELETE_FAILED";
     throw error;
   }
-
-  return post;
 };
 
 const getAllDrafts = () => {
