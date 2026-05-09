@@ -69,36 +69,62 @@ const createPost = ({ title, content, file, imageSource, userId }) => {
   });
 };
 
-const updatePost = async (id, fields, newFile) => {
-  const modifiedPost = await Post.findById(id);
-  if (!modifiedPost) return null;
+// Updates and returns the previous state of the document.
+const updatePost = async (id, fields, image) => {
+  const updates = {};
+  const allowedFields = ["title", "content", "imageSource"];
 
-  const fieldsToUpdate = Object.keys(fields).filter((k) => Boolean(fields[k]));
-  for (const field of fieldsToUpdate) {
-    if (field === "imageSource") {
-      modifiedPost.image.source = sanitizeHtml(fields.imageSource, {
-        allowedTags: ["a"],
-        allowedAttributes: { a: ["href"] },
-      });
-    } else {
-      modifiedPost[field] = field === "content" ? sanitizeHtml(fields[field]) : fields[field];
-    }
-  }
-
-  if (newFile) {
-    if (modifiedPost.image?.id) {
-      try {
-        await cloudinary.uploader.destroy(modifiedPost.image.id);
-      } catch (error) {
-        console.error(`Post edit ${id}: Failed to delete previous image: `, error);
+  allowedFields.forEach((field) => {
+    if (field in fields) {
+      if (field === "imageSource") {
+        updates["image.source"] = fields.imageSource
+          ? sanitizeHtml(fields.imageSource, { allowedTags: ["a"], allowedAttributes: { a: ["href"] } })
+          : "";
+      } else if (field === "content") {
+        updates[field] = sanitizeHtml(fields[field]);
+      } else {
+        updates[field] = fields[field];
       }
     }
-    modifiedPost.image.url = newFile.path;
-    modifiedPost.image.id = newFile.filename;
+  });
+
+  if (image) {
+    updates["image.url"] = image.path;
+    updates["image.id"] = image.filename;
   }
 
-  await modifiedPost.save();
-  return modifiedPost;
+  let oldPost;
+  try {
+    oldPost = await Post.findByIdAndUpdate(id, { $set: updates }, { runValidators: true });
+  } catch (error) {
+    if (error.name === "CastError") {
+      const err = new Error();
+      err.code = "INVALID_ID";
+      throw err;
+    } else if (error.name === "ValidationError") {
+      const err = new Error();
+      err.code = "INVALID_BODY";
+      throw err;
+    }
+    console.error(`Post edit ${id}: Failed to update post: `, error);
+    throw error;
+  }
+
+  if (!oldPost) {
+    const err = new Error();
+    err.code = "NOT_FOUND";
+    throw err;
+  }
+
+  if (image && oldPost.image?.id) {
+    try {
+      await cloudinary.uploader.destroy(oldPost.image.id);
+    } catch (error) {
+      console.error(`Post edit ${id}: Failed to delete previous image: `, error);
+    }
+  }
+
+  return oldPost;
 };
 
 const deletePostById = async (id) => {

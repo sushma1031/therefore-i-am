@@ -177,6 +177,19 @@ const updatePost = async (req, res) => {
 
     res.redirect(`${getPostBasePath(updatedPost.status)}/${req.params.postID}`);
   } catch (error) {
+    if (error.code === "INVALID_ID") {
+      return res.status(400).render("errors/400", {
+        statusCode: 400,
+        message: "Invalid Post ID.",
+      });
+    }
+    if (error.code === "INVALID_BODY") {
+      return res.status(400).render("errors/400", {
+        statusCode: 400,
+        message: "Some information is incorrect.",
+      });
+    }
+
     console.error(`Post edit ${req.params.postID}: Unexpected error saving: `, error);
     res.status(500).render("errors/500", {
       statusCode: 500,
