@@ -4,6 +4,21 @@ body {
     color: #2c2c2c;
 }
 
+a {
+    color: #2c2c2c;
+    text-decoration: none;
+}
+
+a:hover {
+    color: #46A597;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+}
+
+.dropdown-menu a:hover {
+    text-decoration: none;
+}
+
 .container-fluid {
     padding: 0 5%;
 }
@@ -115,6 +130,7 @@ p.navbar-brand {
 
 .navbar-nav li a:hover {
     color: #44b3a3;
+    text-decoration: none;
 }
 
 .btn-primary {
@@ -169,17 +185,6 @@ p.navbar-brand {
 
 .featured-body {
     padding: 0.25rem 0 0.5rem;
-}
-
-.title-link a {
-    color: #2c2c2c;
-    text-decoration: none;
-}
-
-.title-link a:hover {
-    color: #46A597;
-    text-decoration: underline;
-    text-underline-offset: 4px;
 }
 
 .flex {
