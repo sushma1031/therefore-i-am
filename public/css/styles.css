@@ -1,6 +1,7 @@
 body {
     position: relative;
     min-height: 100vh;
+    color: #2c2c2c;
 }
 
 .container-fluid {
@@ -85,6 +86,7 @@ button.navbar-toggler:focus {
 }
 
 .content-wrap {
+    padding-top: 85px;
     padding-bottom: 75px;
 }
 
@@ -136,10 +138,6 @@ p.navbar-brand {
 }
 
 .title-link {
-    margin-bottom: 0;
-    padding-bottom: 0.25rem;
-    line-height: 1.5rem;
-    padding-top: 0.25rem;
     font-weight: bold;
     font-family: 'Poppins', sans-serif;
 }
@@ -176,12 +174,12 @@ p.navbar-brand {
 .title-link a {
     color: #2c2c2c;
     text-decoration: none;
-    transition: color 175ms ease-in-out;
 }
 
 .title-link a:hover {
     color: #46A597;
-    text-decoration: none;
+    text-decoration: underline;
+    text-underline-offset: 4px;
 }
 
 .flex {
