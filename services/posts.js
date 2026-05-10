@@ -4,7 +4,6 @@ const PostVersion = require("../database/models/PostVersion.js");
 const { ObjectId } = require("mongoose").Types;
 const sanitizeHtml = require("sanitize-html");
 const cloudinary = require("cloudinary").v2;
-const config = require("../config.js"); // TODO: remove!
 
 const PostStatus = Object.freeze({
   DRAFT: "draft",

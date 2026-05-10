@@ -180,10 +180,12 @@ const updatePost = async (req, res) => {
 
     res.redirect(`${getPostBasePath(updatedPost.status)}/${req.params.postID}`);
   } catch (error) {
-    if (error.code === "INVALID_ID") {
-      return res.status(400).render("errors/400", {
-        statusCode: 400,
-        message: "Invalid Post ID.",
+    if (error.code === "INVALID_ID" || error.code === "NOT_FOUND") {
+      return res.status(404).render("errors/404", {
+        statusCode: 404,
+        message: "Post not found.",
+        redirect: "/posts",
+        redirectText: "All Posts",
       });
     }
     if (error.code === "INVALID_BODY") {
@@ -215,9 +217,11 @@ const deletePost = async (req, res) => {
     res.redirect(getPostBasePath(post.status));
   } catch (error) {
     if (error.code === "INVALID_ID") {
-      return res.status(400).render("errors/400", {
-        statusCode: 400,
-        message: "Invalid Post ID.",
+      return res.status(404).render("errors/404", {
+        statusCode: 404,
+        message: "Post not found.",
+        redirect: "/posts",
+        redirectText: "All Posts",
       });
     }
 
