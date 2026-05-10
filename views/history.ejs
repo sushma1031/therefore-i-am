@@ -1,0 +1,27 @@
+<%- include("partials/header"); -%>
+
+<div class="px-5-percent">
+  <h1 class="section-title h3 title-link mb-4"><a href="/posts/<%= postID %>"><%= title %></a></h1>
+  <div class="pt-4">
+    <h2 class="h5 text-muted">Version History</h2>
+      <ul class="list-group list-group-flush">
+        <% versions.forEach((v, i) => { %>
+          <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+            <div>
+              <span class="fw-medium">v<%= v.versionNum %></span>
+              <span class="text-muted ms-3" style="font-size: 0.875rem;"><%= v.createdAt.toLocaleString() %></span>
+              <% if (i === 0) { %><span class="badge bg-secondary ms-2">Current</span><% } %>
+            </div>
+            <% if (i !== 0) { %>
+              <form action="/posts/<%= postID %>/restore" method="post">
+                <input type="hidden" name="versionID" value="<%= v._id %>">
+                <button type="submit" class="btn btn-outline-secondary btn-sm">Restore</button>
+              </form>
+            <% } %>
+          </li>
+        <% }) %>
+      </ul>
+  </div>
+</div>
+
+<%- include("partials/footer"); -%>

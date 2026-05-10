@@ -3,6 +3,7 @@
   <% if (status === "draft") { %>
     <div class="d-flex flex-wrap align-items-center gap-2 mt-4 px-5-percent">
       <a class="btn btn-primary btn-sm" href="/posts/<%= id %>/edit">Edit</a>
+      <a class="btn btn-outline-secondary btn-sm" href="/posts/<%= id %>/history">History</a>
       <form action="/posts/<%= id %>/publish" method="post" class="d-inline">
         <button class="btn btn-outline-secondary btn-sm" type="submit">Publish</button>
       </form>
