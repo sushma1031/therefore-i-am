@@ -265,6 +265,12 @@ p.navbar-brand {
     font-weight: bold;
 }
 
+@media (min-width: 992px) {
+    #versionPreview {
+        width: 50vw;
+    }
+}
+
 @media (max-width: 1028px) {
     .search-bar {
         margin-left: 0;

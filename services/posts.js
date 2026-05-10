@@ -381,6 +381,23 @@ const getPostHistory = async (postID, count = 0) => {
   }
 };
 
+const getVersion = async (postID, versionID) => {
+  let version;
+  try {
+    version = await PostVersion.findOne({ _id: versionID, postID: postID });
+    return version;
+  } catch (error) {
+    if (error.name === "CastError") {
+      const err = new Error();
+      err.code = "INVALID_VERSION";
+      throw err;
+    }
+
+    console.log(`Fetch post version ${versionID}:`, error);
+    throw error;
+  }
+};
+
 const restoreVersion = async (postID, versionID) => {
   let versionToRestore;
   try {
@@ -470,5 +487,6 @@ module.exports = {
   getDraftById,
   publishDraft,
   getPostHistory,
+  getVersion,
   restoreVersion,
 };

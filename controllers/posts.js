@@ -359,6 +359,23 @@ const getPostHistory = async (req, res) => {
   }
 };
 
+const getPostVersion = async (req, res) => {
+  try {
+    const version = await postService.getVersion(req.params.postID, req.params.versionID);
+    if (!version) {
+      return res.status(404).json({ error: "Version not found." });
+    }
+
+    res.json(version);
+  } catch (error) {
+    if (error.code === "INVALID_VERSION") {
+      return res.status(404).json({ error: "Version not found." });
+    }
+
+    res.status(500).json({ error: "An unexpected error occurred while fetching the version." });
+  }
+};
+
 const restorePostVersion = async (req, res) => {
   let versionID = req.body["versionID"];
 
@@ -407,5 +424,6 @@ module.exports = {
   renderDraft,
   publishDraft,
   getPostHistory,
+  getPostVersion,
   restorePostVersion,
 };
