@@ -72,7 +72,7 @@ button.navbar-toggler:focus {
     top: 50%;
     right: 10px;
     transform: translateY(-50%);
-    
+
     border: none;
     background: none;
     cursor: pointer;
@@ -146,7 +146,7 @@ p.navbar-brand {
     --bs-btn-active-border-color: #247569;
 }
 
-.btn-primary:hover, 
+.btn-primary:hover,
 .btn-primary:active {
     background-color: #247569;
     border-color: #247569;
@@ -252,6 +252,18 @@ p.navbar-brand {
 .confirm-note {
     padding-top: 0.5rem;
     margin-bottom: 0;
+}
+
+.post-list-row {
+    grid-template-columns: 1fr auto auto;
+}
+
+.min-width-0 {
+    min-width: 0;
+}
+
+.ws-no-wrap {
+    white-space: nowrap;
 }
 
 .opacity-60 {

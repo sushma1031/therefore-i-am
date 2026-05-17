@@ -1,12 +1,12 @@
-<div class="row py-5 px-3 px-lg-5">
+<div class="py-5 px-3 px-lg-5">
   <% posts.forEach((post, pindex)=> { %>
-    <div class="col-lg-6 py-3 border-bottom">
-      <div class="flex align-items-center">
-          <p class="title-link mb-0"><a href="<%= (typeof viewBasePath !== 'undefined' ? viewBasePath : '/posts') %>/<%=post._id%>">
+    <div class="py-2 border-bottom">
+      <div class="d-grid align-items-center gap-3 post-list-row">
+          <p class="title-link min-width-0 mb-0 text-truncate"><a href="<%= (typeof viewBasePath !== 'undefined' ? viewBasePath : '/posts') %>/<%=post._id%>">
               <%= post.title %>
             </a>
           </p>
-          <p class="mb-0 ms-auto me-3 opacity-75"><%= post.dateString %></p>
+          <p class="mb-0 opacity-75 text-end ws-no-wrap"><%= post.dateString %></p>
         <% if(auth) { %>
           <div class="dropdown">
             <button class="btn btn-link text-body text-decoration-none p-0 my-0" type="button"
