@@ -1,16 +1,22 @@
+:root {
+    --color-text: #2c2c2c;
+    --color-accent: #46A597;
+}
+
 body {
     position: relative;
     min-height: 100vh;
-    color: #2c2c2c;
+    color: var(--color-text);
 }
 
 a {
-    color: #2c2c2c;
+    color: var(--color-text);
     text-decoration: none;
+    transition: none;
 }
 
 a:hover {
-    color: #46A597;
+    color: var(--color-accent);
     text-decoration: underline;
     text-underline-offset: 4px;
 }
@@ -194,9 +200,16 @@ p.navbar-brand {
     align-items: baseline;
 }
 
-.warning-text {
-    padding-top: 0.5rem;
-    margin-bottom: 0;
+.btn-text-link {
+    color: var(--color-text);
+    text-decoration: none;
+    transition: none;
+}
+
+.btn-text-link:hover {
+    color: var(--color-accent);
+    text-decoration: underline;
+    text-underline-offset: 4px;
 }
 
 .post-image {
@@ -234,6 +247,11 @@ p.navbar-brand {
     text-align: center;
     margin-top: 1rem;
     font-size: 1rem;
+}
+
+.confirm-note {
+    padding-top: 0.5rem;
+    margin-bottom: 0;
 }
 
 .opacity-60 {
