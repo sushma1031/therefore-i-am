@@ -21,6 +21,10 @@ a:hover {
     text-underline-offset: 4px;
 }
 
+a[class*="btn"]:hover {
+    text-decoration: none;
+}
+
 .dropdown-menu a:hover {
     text-decoration: none;
 }
