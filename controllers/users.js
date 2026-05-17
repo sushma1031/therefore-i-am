@@ -122,7 +122,7 @@ const deleteUser = async (req, res) => {
   try {
     const user = await userService.deleteUserById(userID);
     if (!user) {
-      console.warn(`User deletion error: No user found for: ${userID}`);
+      console.warn(`Danger: User ${req.session.userId} tried to delete account ${userID}.`);
       return res.status(404).render("errors/404", {
         statusCode: 404,
         message: "Invalid user provided.",
