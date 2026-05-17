@@ -6,7 +6,12 @@
               <%= post.title %>
             </a>
           </p>
-          <p class="mb-0 opacity-75 text-end ws-no-wrap"><%= post.dateString %></p>
+          <p class="mb-0 opacity-75 text-end ws-no-wrap">
+              <%= post.date.prefix %>
+              <time class="local-date" datetime="<%= post.date.utcStr %>" data-format="<%= post.date.format %>">
+                  <%= post.date.utcStr.split("T")[0] %>
+              </time>
+          </p>
         <% if(auth) { %>
           <div class="dropdown">
             <button class="btn btn-link text-body text-decoration-none p-0 my-0" type="button"
