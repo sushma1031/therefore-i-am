@@ -116,7 +116,7 @@ const createPost = async (req, res) => {
       content: req.body.content,
       file: req.file && Object.keys(req.file).length > 0 ? req.file : null,
       imageSource: req.body.imageSource ? req.body.imageSource : "",
-      userId: req.session.userId,
+      userID: req.session.userId,
     });
     res.redirect(`/posts/${post._id}`);
   } catch (err) {

@@ -21,7 +21,7 @@ document.querySelectorAll(".relative-date").forEach((el) => {
   const date = new Date(utcString);
   const today = new Date();
 
-  if (!isNaN(date)) return;
+  if (isNaN(date)) return;
 
   today.setHours(0, 0, 0, 0);
   date.setHours(0, 0, 0, 0);
@@ -29,13 +29,15 @@ document.querySelectorAll(".relative-date").forEach((el) => {
   const diff = today - date;
   const days = Math.floor(diff / (1000 * 60 * 60 * 24));
 
+  const rtf = new Intl.RelativeTimeFormat("en-US", { numeric: "auto" });
+
   let relativeText = "";
-  if (days === 0) relativeText = "Today";
-  else if (days === 1) relativeText = "1 day ago";
-  else if (days > 1 && days < 30) relativeText = `${days} days ago`;
-  else {
+
+  if (days >= 0 && days < 30) {
+    relativeText = rtf.format(-days, "day");
+  } else {
     relativeText = date.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
   }
 
-  el.textContent = relativeText;
+  el.textContent = relativeText[0].toUpperCase() + relativeText.slice(1);
 });

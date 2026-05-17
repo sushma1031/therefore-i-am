@@ -20,7 +20,7 @@
       <div class="featured-post">
         <div class="featured-image"><a href="/posts/<%=post._id%>"><img src="<%= (post.image?.url || defaultImage) %>" alt="thumbnail"></a></div>
         <div class="featured-body">
-          <p class="title-link fs-6 my-1">
+          <p class="title-link text-truncate fs-6 my-1">
             <a href="/posts/<%=post._id%>"><%= post.title %></a>
           </p>
           <p class="opacity-60">
