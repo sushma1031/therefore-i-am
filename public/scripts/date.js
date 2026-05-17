@@ -21,7 +21,7 @@ document.querySelectorAll(".relative-date").forEach((el) => {
   const date = new Date(utcString);
   const today = new Date();
 
-  if (!isNaN(date)) return;
+  if (isNaN(date)) return;
 
   today.setHours(0, 0, 0, 0);
   date.setHours(0, 0, 0, 0);
