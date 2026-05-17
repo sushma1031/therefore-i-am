@@ -20,10 +20,14 @@
       <div class="featured-post">
         <div class="featured-image"><a href="/posts/<%=post._id%>"><img src="<%= (post.image?.url || defaultImage) %>" alt="thumbnail"></a></div>
         <div class="featured-body">
-          <p class="title-link fs-6 mb-2">
+          <p class="title-link fs-6 my-1">
             <a href="/posts/<%=post._id%>"><%= post.title %></a>
           </p>
-          <p class="opacity-60"><%= post.relativeDate %></p>
+          <p class="opacity-60">
+            <time class="relative-date" datetime="<%= post.datePosted %>">
+              <%= post.datePosted.split("T")[0] %>
+            </time>
+          </p>
         </div>
       </div>
     </div>
@@ -31,5 +35,5 @@
   <p class="title-link fs-5 text-center"><a href="/posts">View All Posts</a></p>
 </div>
 
-
+<script src="/scripts/date.js" defer></script>
 <%- include("partials/footer"); -%>

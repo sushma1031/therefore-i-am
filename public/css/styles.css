@@ -232,8 +232,7 @@ p.navbar-brand {
     margin: auto;
 }
 
-.created-date,
-.username {
+.post-meta {
     padding: 0 1rem 0 0.2rem;
 }
 
@@ -270,7 +269,7 @@ p.navbar-brand {
     opacity: 0.6;
 }
 
-.credit {
+.image-credit {
     text-align: center;
     font-style: italic;
     padding: 0.2rem 0 0.5rem;

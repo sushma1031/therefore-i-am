@@ -21,7 +21,7 @@ const getAllPosts = () => {
 const searchPosts = (query) => {
   const escapedQuery = query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   const filter = { currentTitle: new RegExp(escapedQuery, "i"), status: PostStatus.PUBLISHED };
-  return Post.find(filter, { currentTitle: 1 });
+  return Post.find(filter, { currentTitle: 1, postedAt: 1 });
 };
 
 const getPostById = (id) => {

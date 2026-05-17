@@ -1,61 +1,73 @@
 <%- include("partials/header"); -%>
 
-	<div class="px-5-percent">
-		<h1 class="section-title h3 title-link mb-4"><a href="/posts/<%= postID %>">
-				<%= title %>
-			</a></h1>
-		<div class="pt-4">
-			<h2 class="h5 text-muted">Version History</h2>
-			<ul class="list-group list-group-flush">
-				<% versions.forEach((v, i)=> { %>
-					<li class="list-group-item d-flex justify-content-between align-items-center px-0">
-						<div>
-							<% if (i !== 0) { %>
-								<button class="btn btn-link p-0 fw-medium btn-text-link" onclick="previewVersion('<%= postID %>', '<%= v._id %>')">v<%= v.versionNum %></button>
-							<% } else { %>
-								<span class="fw-medium">v<%= v.versionNum %></span>
-							<% } %>
-							<span class="text-muted ms-3" style="font-size: 0.875rem;">
-								<%= v.createdAt.toLocaleString() %>
-							</span>
-							<% if (i===0) { %>
-								<span class="badge bg-secondary ms-2">Current</span>
-							<% } %>
-						</div>
-						<% if (i !==0) { %>
-							<form action="/posts/<%= postID %>/restore" method="post">
-								<input type="hidden" name="versionID" value="<%= v._id %>">
-								<button type="submit" class="btn btn-outline-secondary btn-sm">Restore</button>
-							</form>
-							<% } %>
+<div class="px-5-percent">
+  <h1 class="section-title h3 title-link mb-4"><a href="/posts/<%= postID %>"> <%= title %> </a></h1>
+  <div class="pt-4">
+    <h2 class="h5 text-muted">Version History</h2>
+    <ul class="list-group list-group-flush">
+      <% versions.forEach((v, i)=> { %>
+      <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+        <div>
+          <% if (i !== 0) { %>
+          <button
+            class="btn btn-link p-0 fw-medium btn-text-link"
+            onclick="previewVersion('<%= postID %>', '<%= v._id %>')"
+          >
+            v<%= v.versionNum %>
+          </button>
+          <% } else { %>
+          <span class="fw-medium">v<%= v.versionNum %></span>
+          <% } %>
+          <span class="text-muted ms-3" style="font-size: 0.875rem">
+              <time class="local-date" datetime="<%= v.dateCreated.utcStr %>" data-format="<%= v.dateCreated.format %>">
+                <%= v.dateCreated.utcStr %>
+              </time>
+          </span>
+          <% if (i===0) { %>
+          <span class="badge bg-secondary ms-2">Current</span>
+          <% } %>
+        </div>
+        <% if (i !==0) { %>
+        <form action="/posts/<%= postID %>/restore" method="post">
+          <input type="hidden" name="versionID" value="<%= v._id %>" />
+          <button type="submit" class="btn btn-outline-secondary btn-sm">Restore</button>
+        </form>
+        <% } %>
+      </li>
+      <% }) %>
+    </ul>
 
-					</li>
-					<% }) %>
-			</ul>
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="versionPreview" aria-labelledby="versionPreviewLabel">
+      <div class="offcanvas-header">
+        <h3 class="h5 offcanvas-title" id="versionPreviewLabel"><%= title %></h3>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+      </div>
+      <div class="offcanvas-body" id="versionBody"></div>
+    </div>
+  </div>
+</div>
 
-			<div class="offcanvas offcanvas-start" tabindex="-1" id="versionPreview" aria-labelledby="versionPreviewLabel">
-				<div class="offcanvas-header">
-					<h3 class="h5 offcanvas-title" id="versionPreviewLabel">
-						<%= title %>
-					</h3>
-					<button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-				</div>
-				<div class="offcanvas-body" id="versionBody"></div>
-			</div>
-		</div>
-	</div>
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+  <div
+    id="versionPreviewToast"
+    class="toast align-items-center text-bg-danger border-0"
+    role="alert"
+    aria-live="assertive"
+    aria-atomic="true"
+  >
+    <div class="d-flex">
+      <div class="toast-body" id="versionToastMsg">Could not load version preview.</div>
+      <button
+        type="button"
+        class="btn-close btn-close-white me-2 m-auto"
+        data-bs-dismiss="toast"
+        aria-label="Close"
+      ></button>
+    </div>
+  </div>
+</div>
 
-	<div class="toast-container position-fixed bottom-0 end-0 p-3">
-		<div id="versionPreviewToast" class="toast align-items-center text-bg-danger border-0" role="alert"
-			aria-live="assertive" aria-atomic="true">
-			<div class="d-flex">
-				<div class="toast-body" id="versionToastMsg">Could not load version preview.</div>
-				<button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
-					aria-label="Close"></button>
-			</div>
-		</div>
-	</div>
+<script src="/scripts/date.js" defer></script>
+<script src="/scripts/fetchVersionPreview.js"></script>
 
-	<script src="/scripts/fetchVersionPreview.js"></script>
-
-	<%- include("partials/footer"); -%>
+<%- include("partials/footer"); -%>

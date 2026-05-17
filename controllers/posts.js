@@ -1,5 +1,4 @@
 const postService = require("../services/posts.js");
-const date = require("../utils/date.js");
 const config = require("../config.js");
 
 function getPostBasePath(status) {
@@ -12,7 +11,7 @@ const renderHome = (req, res) => {
     .then((posts) => {
       posts.forEach((post) => {
         post.title = post.currentTitle;
-        post.relativeDate = date.calcRelativeDate(post.postedAt);
+        post.datePosted = post.postedAt.toISOString();
       });
       res.render("home", { posts, defaultImage: config.defaultPostImage.url });
     })
@@ -41,7 +40,7 @@ const searchPosts = (req, res) => {
     .then((posts) => {
       posts.forEach((post) => {
         post.title = post.currentTitle;
-        post.dateString = date.getDate(post.postedAt);
+        post.date = {prefix: "", utcStr: post.postedAt.toISOString(), format: "date"};
       });
       res.render("search", { posts, query });
     })
@@ -60,7 +59,7 @@ const getAllPosts = (req, res) => {
     .then((posts) => {
       posts.forEach((post) => {
         post.title = post.currentTitle;
-        post.dateString = date.getDate(post.postedAt);
+        post.date = {prefix: "", utcStr: post.postedAt.toISOString(), format: "date"};
       });
       res.render("posts", { posts, title: "All Posts", viewBasePath: "/posts" });
     })
@@ -84,7 +83,7 @@ const renderPost = (req, res) => {
           title: post.currentVersion.title,
           content: post.currentVersion.content,
           username: post.creator?.username || "Anonymous",
-          datePosted: date.getDate(post.postedAt),
+          datePosted: {utcStr: post.postedAt.toISOString(), format: "date"},
           imageURL: post.image?.url,
           imageSource: post.image?.source,
         });
@@ -245,7 +244,7 @@ const getAllDrafts = async (req, res) => {
     const drafts = await postService.getAllDrafts();
     drafts.forEach((draft) => {
       draft.title = draft.currentTitle;
-      draft.dateString = `Last updated: ${date.calcRelativeDate(draft.updatedAt)}`;
+      draft.date = {prefix: "Last updated:", utcStr: draft.updatedAt.toISOString()};
     });
     res.render("posts", { posts: drafts, title: "Drafts", viewBasePath: "/posts/drafts" });
   } catch (error) {
@@ -264,7 +263,7 @@ const createDraft = async (req, res) => {
       content: req.body.content,
       file: req.file && Object.keys(req.file).length > 0 ? req.file : null,
       imageSource: req.body.imageSource ? req.body.imageSource : "",
-      userId: req.session.userId,
+      userID: req.session.userId,
     });
     res.redirect(`/posts/${draft._id}/edit`);
   } catch (err) {
@@ -341,7 +340,10 @@ const getPostHistory = async (req, res) => {
     res.render("history", {
       postID: versions[0].postID,
       title: versions[0].title,
-      versions,
+      versions: versions.map((v) => ({
+        ...v._doc,
+        dateCreated: { utcStr: v.createdAt.toISOString(), format: "datetime" },
+      })),
     });
   } catch (error) {
     if (error.code === "INVALID_ID") {

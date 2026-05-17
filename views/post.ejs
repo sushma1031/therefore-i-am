@@ -16,23 +16,27 @@
   <div class="px-5-percent">
     <div class="post-content pb-3 opacity-60">
       <i class="fa-solid fa-user opacity-75 small"></i>
-      <span class="username">
+      <span class="post-meta">
         <%= username %>
       </span>
       <% if (status === "published") { %>
         <i class="fa-solid fa-calendar opacity-75 small"></i>
-        <span class="created-date"><%= datePosted %></span>
+        <span class="post-meta">
+            <time class="local-date" datetime="<%= datePosted.utcStr %>" data-format="datePosted.format">
+                <%= datePosted.utcStr.split("T")[0] %>
+            </time>
+        </span>
       <% } %>
       </div>
     <% if (imageURL) { %>
       <div class="post-image">
         <img src="<%= imageURL %>" alt="post image">
       </div>
-      <p class="credit">Source: <%- imageSource %></p>
+      <p class="image-credit">Source: <%- imageSource %></p>
     <% } %>
     <div class="post-content py-4 text-responsive">
       <%- content %>
     </div>
   </div>
-
+  <script src="/scripts/date.js" defer></script>
 <%- include("partials/footer"); -%>
