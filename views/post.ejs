@@ -3,6 +3,7 @@
   <% if (status === "draft") { %>
     <div class="d-flex flex-wrap align-items-center gap-2 mt-4 px-5-percent">
       <a class="btn btn-primary btn-sm" href="/posts/<%= id %>/edit">Edit</a>
+      <a class="btn btn-outline-secondary btn-sm" href="/posts/<%= id %>/history">History</a>
       <form action="/posts/<%= id %>/publish" method="post" class="d-inline">
         <button class="btn btn-outline-secondary btn-sm" type="submit">Publish</button>
       </form>
@@ -13,16 +14,16 @@
     <%= title %>
   </h1>
   <div class="px-5-percent">
-    <p class="post-content pb-3 opacity-60">
-      <i class="fa-solid fa-user" style="color: #515151"></i>
+    <div class="post-content pb-3 opacity-60">
+      <i class="fa-solid fa-user opacity-75 small"></i>
       <span class="username">
         <%= username %>
       </span>
       <% if (status === "published") { %>
-        <i class="fa-solid fa-clock" style="color: #515151;"></i>
+        <i class="fa-solid fa-calendar opacity-75 small"></i>
         <span class="created-date"><%= datePosted %></span>
       <% } %>
-    </p>
+      </div>
     <% if (imageURL) { %>
       <div class="post-image">
         <img src="<%= imageURL %>" alt="post image">

@@ -11,6 +11,7 @@ const renderHome = (req, res) => {
     .getRecentPosts()
     .then((posts) => {
       posts.forEach((post) => {
+        post.title = post.currentTitle;
         post.relativeDate = date.calcRelativeDate(post.postedAt);
       });
       res.render("home", { posts, defaultImage: config.defaultPostImage.url });
@@ -39,6 +40,7 @@ const searchPosts = (req, res) => {
     .searchPosts(query)
     .then((posts) => {
       posts.forEach((post) => {
+        post.title = post.currentTitle;
         post.dateString = date.getDate(post.postedAt);
       });
       res.render("search", { posts, query });
@@ -57,6 +59,7 @@ const getAllPosts = (req, res) => {
     .getAllPosts()
     .then((posts) => {
       posts.forEach((post) => {
+        post.title = post.currentTitle;
         post.dateString = date.getDate(post.postedAt);
       });
       res.render("posts", { posts, title: "All Posts", viewBasePath: "/posts" });
@@ -78,8 +81,8 @@ const renderPost = (req, res) => {
         return res.render("post", {
           status: postService.PostStatus.PUBLISHED,
           id: post._id,
-          title: post.title,
-          content: post.content,
+          title: post.currentVersion.title,
+          content: post.currentVersion.content,
           username: post.creator?.username || "Anonymous",
           datePosted: date.getDate(post.postedAt),
           imageURL: post.image?.url,
@@ -142,8 +145,8 @@ const renderEdit = (req, res) => {
         if (post.image?.url) thumbnailUrl = post.image.url.replace(regex, `$1c_thumb,w_200,g_face/$2`);
         res.render("edit", {
           status: post.status,
-          title: post.title,
-          content: post.content,
+          title: post.currentVersion.title,
+          content: post.currentVersion.content,
           username: post.username,
           thumbnail: thumbnailUrl,
           imageSource: post.image?.source || "",
@@ -177,6 +180,21 @@ const updatePost = async (req, res) => {
 
     res.redirect(`${getPostBasePath(updatedPost.status)}/${req.params.postID}`);
   } catch (error) {
+    if (error.code === "INVALID_ID" || error.code === "NOT_FOUND") {
+      return res.status(404).render("errors/404", {
+        statusCode: 404,
+        message: "Post not found.",
+        redirect: "/posts",
+        redirectText: "All Posts",
+      });
+    }
+    if (error.code === "INVALID_BODY") {
+      return res.status(400).render("errors/400", {
+        statusCode: 400,
+        message: "Some information is incorrect.",
+      });
+    }
+
     console.error(`Post edit ${req.params.postID}: Unexpected error saving: `, error);
     res.status(500).render("errors/500", {
       statusCode: 500,
@@ -195,8 +213,18 @@ const deletePost = async (req, res) => {
         message: "No post found with the given ID.",
       });
     }
+
     res.redirect(getPostBasePath(post.status));
   } catch (error) {
+    if (error.code === "INVALID_ID") {
+      return res.status(404).render("errors/404", {
+        statusCode: 404,
+        message: "Post not found.",
+        redirect: "/posts",
+        redirectText: "All Posts",
+      });
+    }
+
     if (error.code === "DB_DELETE_FAILED") {
       return res.status(500).render("errors/500", {
         statusCode: 500,
@@ -216,6 +244,7 @@ const getAllDrafts = async (req, res) => {
   try {
     const drafts = await postService.getAllDrafts();
     drafts.forEach((draft) => {
+      draft.title = draft.currentTitle;
       draft.dateString = `Last updated: ${date.calcRelativeDate(draft.updatedAt)}`;
     });
     res.render("posts", { posts: drafts, title: "Drafts", viewBasePath: "/posts/drafts" });
@@ -269,8 +298,8 @@ const renderDraft = async (req, res) => {
     return res.render("post", {
       status: postService.PostStatus.DRAFT,
       id: post._id,
-      title: post.title,
-      content: post.content,
+      title: post.currentVersion.title,
+      content: post.currentVersion.content,
       username: post.creator?.username || "Anonymous",
       imageURL: post.image?.url,
       imageSource: post.image?.source,
@@ -298,6 +327,88 @@ const publishDraft = async (req, res) => {
   }
 };
 
+const getPostHistory = async (req, res) => {
+  try {
+    const versions = await postService.getPostHistory(req.params.postID);
+
+    if (versions.length === 0) {
+      return res.status(404).render("errors/404", {
+        statusCode: 404,
+        message: "Post not found.",
+      });
+    }
+
+    res.render("history", {
+      postID: versions[0].postID,
+      title: versions[0].title,
+      versions,
+    });
+  } catch (error) {
+    if (error.code === "INVALID_ID") {
+      return res.status(404).render("errors/404", {
+        statusCode: 404,
+        message: "Post not found.",
+      });
+    }
+
+    console.error(`Versions fetch: ${req.params.postID}: Unexpected error: `, error);
+    res.status(500).render("errors/500", {
+      statusCode: 500,
+      message: "An unexpected error occurred.",
+    });
+  }
+};
+
+const getPostVersion = async (req, res) => {
+  try {
+    const version = await postService.getVersion(req.params.postID, req.params.versionID);
+    if (!version) {
+      return res.status(404).json({ error: "Version not found." });
+    }
+
+    res.json(version);
+  } catch (error) {
+    if (error.code === "INVALID_VERSION") {
+      return res.status(404).json({ error: "Version not found." });
+    }
+
+    res.status(500).json({ error: "An unexpected error occurred while fetching the version." });
+  }
+};
+
+const restorePostVersion = async (req, res) => {
+  let versionID = req.body["versionID"];
+
+  if (versionID) {
+    versionID = versionID.trim();
+  }
+
+  if (!versionID) {
+    return res.status(400).render("errors/400", {
+      statusCode: 400,
+      message: "Version ID missing.",
+    });
+  }
+
+  try {
+    const { status } = await postService.restoreVersion(req.params.postID, versionID);
+    return res.redirect(`${getPostBasePath(status)}/${req.params.postID}`);
+  } catch (error) {
+    if (error.code === "INVALID_VERSION") {
+      return res.status(404).render("errors/404", {
+        statusCode: 404,
+        message: "Version not found.",
+      });
+    }
+
+    console.error(`Restore version ${req.params.postID}: Unexpected error: `, error);
+    res.status(500).render("errors/500", {
+      statusCode: 500,
+      message: "An unexpected error occurred while restoring the version.",
+    });
+  }
+};
+
 module.exports = {
   renderHome,
   searchPosts,
@@ -312,4 +423,7 @@ module.exports = {
   createDraft,
   renderDraft,
   publishDraft,
+  getPostHistory,
+  getPostVersion,
+  restorePostVersion,
 };

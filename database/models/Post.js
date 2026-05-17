@@ -2,9 +2,9 @@ const mongoose = require("mongoose");
 
 const postSchema = new mongoose.Schema(
   {
-    title: { type: String, required: true },
-    content: { type: String, default: "" },
-    creator: { type: mongoose.Types.ObjectId, ref: "User" },
+    currentTitle: { type: String, default: "" },
+    currentVersion: { type: mongoose.Types.ObjectId, ref: "PostVersion" },
+    creator: { type: mongoose.Types.ObjectId, ref: "User", immutable: true },
     image: {
       url: String,
       id: String,

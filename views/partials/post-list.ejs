@@ -1,0 +1,52 @@
+<div class="py-5 px-3 px-lg-5">
+  <% posts.forEach((post, pindex)=> { %>
+    <div class="py-2 border-bottom">
+      <div class="d-grid align-items-center gap-3 post-list-row">
+          <p class="title-link min-width-0 mb-0 text-truncate"><a href="<%= (typeof viewBasePath !== 'undefined' ? viewBasePath : '/posts') %>/<%=post._id%>">
+              <%= post.title %>
+            </a>
+          </p>
+          <p class="mb-0 opacity-75 text-end ws-no-wrap"><%= post.dateString %></p>
+        <% if(auth) { %>
+          <div class="dropdown">
+            <button class="btn btn-link text-body text-decoration-none p-0 my-0" type="button"
+              data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="fa-solid fa-ellipsis-vertical opacity-75"></i>
+            </button>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="/posts/<%=post._id%>/edit" class="link">Edit</a></li>
+              <li><a class="dropdown-item" href="/posts/<%=post._id%>/history" class="link">History</a></li>
+              <li>
+                <button class="dropdown-item" role="button" data-bs-toggle="modal"
+                  data-bs-target="#confirmDeletion<%=pindex%>">Delete</button>
+              </li>
+            </ul>
+          </div>
+          <!-- Deletion Confirmation Modal -->
+          <div class="modal fade" id="confirmDeletion<%=pindex%>" tabindex="-1" aria-labelledby="Confirm post deletion"
+            aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h1 class="modal-title fs-5" id="confirmDeletionLabel">Confirm Deletion</h1>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  You are about to delete: <span class="bold">
+                    <%= post.title %>
+                  </span>
+                  <br />
+                  <p class="confirm-note bold">This action cannot be undone.</p>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                  <a class="btn btn-danger" href="/posts/<%=post._id%>/delete" class="link">Delete</a>
+                </div>
+              </div>
+            </div>
+          </div>
+          <% } %>
+      </div>
+    </div>
+  <% }) %>
+</div>

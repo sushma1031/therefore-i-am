@@ -1,6 +1,28 @@
+:root {
+    --color-text: #2c2c2c;
+    --color-accent: #46A597;
+}
+
 body {
     position: relative;
     min-height: 100vh;
+    color: var(--color-text);
+}
+
+a {
+    color: var(--color-text);
+    text-decoration: none;
+    transition: none;
+}
+
+a:hover {
+    color: var(--color-accent);
+    text-decoration: underline;
+    text-underline-offset: 4px;
+}
+
+.dropdown-menu a:hover {
+    text-decoration: none;
 }
 
 .container-fluid {
@@ -50,7 +72,7 @@ button.navbar-toggler:focus {
     top: 50%;
     right: 10px;
     transform: translateY(-50%);
-    
+
     border: none;
     background: none;
     cursor: pointer;
@@ -85,6 +107,7 @@ button.navbar-toggler:focus {
 }
 
 .content-wrap {
+    padding-top: 85px;
     padding-bottom: 75px;
 }
 
@@ -113,6 +136,7 @@ p.navbar-brand {
 
 .navbar-nav li a:hover {
     color: #44b3a3;
+    text-decoration: none;
 }
 
 .btn-primary {
@@ -122,7 +146,7 @@ p.navbar-brand {
     --bs-btn-active-border-color: #247569;
 }
 
-.btn-primary:hover, 
+.btn-primary:hover,
 .btn-primary:active {
     background-color: #247569;
     border-color: #247569;
@@ -136,10 +160,6 @@ p.navbar-brand {
 }
 
 .title-link {
-    margin-bottom: 0;
-    padding-bottom: 0.25rem;
-    line-height: 1.5rem;
-    padding-top: 0.25rem;
     font-weight: bold;
     font-family: 'Poppins', sans-serif;
 }
@@ -160,28 +180,17 @@ p.navbar-brand {
     object-fit: cover;
     opacity: 1;
     transition-property: transform, opacity;
-    transition-duration: 200ms;
+    transition-duration: 225ms;
     transition-timing-function: ease-in-out;
 }
 
 .featured-image img:hover {
     opacity: 0.75;
-    transform: scale(1.2);
+    transform: scale(1.075);
 }
 
 .featured-body {
     padding: 0.25rem 0 0.5rem;
-}
-
-.title-link a {
-    color: #2c2c2c;
-    text-decoration: none;
-    transition: color 175ms ease-in-out;
-}
-
-.title-link a:hover {
-    color: #46A597;
-    text-decoration: none;
 }
 
 .flex {
@@ -191,9 +200,16 @@ p.navbar-brand {
     align-items: baseline;
 }
 
-.warning-text {
-    padding-top: 0.5rem;
-    margin-bottom: 0;
+.btn-text-link {
+    color: var(--color-text);
+    text-decoration: none;
+    transition: none;
+}
+
+.btn-text-link:hover {
+    color: var(--color-accent);
+    text-decoration: underline;
+    text-underline-offset: 4px;
 }
 
 .post-image {
@@ -233,6 +249,23 @@ p.navbar-brand {
     font-size: 1rem;
 }
 
+.confirm-note {
+    padding-top: 0.5rem;
+    margin-bottom: 0;
+}
+
+.post-list-row {
+    grid-template-columns: 1fr auto auto;
+}
+
+.min-width-0 {
+    min-width: 0;
+}
+
+.ws-no-wrap {
+    white-space: nowrap;
+}
+
 .opacity-60 {
     opacity: 0.6;
 }
@@ -260,6 +293,12 @@ p.navbar-brand {
 
 .bold {
     font-weight: bold;
+}
+
+@media (min-width: 992px) {
+    #versionPreview {
+        width: 50vw;
+    }
 }
 
 @media (max-width: 1028px) {

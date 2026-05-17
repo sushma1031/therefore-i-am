@@ -25,5 +25,5 @@ exports.calcRelativeDate = function (inputDate) {
     return months == 1 ? "1 month ago" : `${months} months ago`;
   }
 
-  return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  return date.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
 };
