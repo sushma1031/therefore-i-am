@@ -1,48 +1,4 @@
-const config = require("../config.js");
 const userService = require("../services/users.js");
-
-const renderRegister = (req, res) => {
-  let message;
-  switch (req.query.error) {
-    case "server":
-      message = "Internal server error.";
-      break;
-    case "alreadyregistered":
-      message = "This email is already registered.";
-      break;
-    default:
-      message = undefined;
-  }
-  res.render("register", { errorMessage: message });
-};
-
-const register = (req, res) => {
-  if (process.env.NODE_ENV === "production" && req.body.email !== config.adminEmail) {
-    return res.status(400).render("errors/400", {
-      statusCode: 400,
-      message: "You do not have permission to create an account. Please contact the owner of this blog.",
-    });
-  }
-
-  userService
-    .findByEmail(req.body.email)
-    .then((prevRegistered) => {
-      if (prevRegistered) {
-        return res.redirect("/register?error=alreadyregistered");
-      } else {
-        const { username, email, password } = req.body;
-        // To Do: Validate user input
-        userService
-          .createUser({ username, email, password })
-          .then((registeredUser) => {
-            req.session.userId = registeredUser._id;
-            res.redirect("/");
-          })
-          .catch((err) => console.log(err.message));
-      }
-    })
-    .catch((error) => console.log(error.message));
-};
 
 const renderLogin = (req, res) => {
   let message;
@@ -144,4 +100,4 @@ const deleteUser = async (req, res) => {
   }
 };
 
-module.exports = { renderRegister, register, deleteUser, renderLogin, login, logout };
+module.exports = { deleteUser, renderLogin, login, logout };

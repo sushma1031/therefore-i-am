@@ -6,7 +6,7 @@ const connectDB = async () => {
     .connect(config.mongoURI)
     .then(() => console.log("Connected to Mongo."))
     .catch((err) => {
-      console.log(err.message);
+      console.log("Failed to connect to DB:", err);
       process.exit(1);
     });
 
@@ -14,14 +14,7 @@ const connectDB = async () => {
 };
 
 const closeDBConn = async () => {
-  try {
-    await mongoose.connection.close();
-    console.log("MongoDB connection closed.");
-    process.exit(0);
-  } catch (err) {
-    console.error("Error closing Mongo connection: ", err);
-    process.exit(1);
-  }
+  await mongoose.connection.close();
 };
 
 module.exports = { connectDB, closeDBConn };

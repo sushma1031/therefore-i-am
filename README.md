@@ -17,6 +17,7 @@ A full-stack blog web application built using the following:
 ## Run Locally
 
 1. Clone the repository and install dependencies: `npm install`
+1. Create a `.env` file and populate it with the approriate values based on the example. 
 1. MongoDB transactions require a replica set. If your local MongoDB is running as a standalone instance, configure it:
    - Add the following to your `mongod.conf`:
      ```yaml
