@@ -27,7 +27,11 @@ const searchPosts = (query) => {
 const getPostById = (id) => {
   return Post.findOne({ _id: id, status: PostStatus.PUBLISHED })
     .populate("creator", "username")
-    .populate("currentVersion", "title content -_id");
+    .populate("currentVersion", "title content -_id")
+    .catch((error) => {
+      if (error.name === "CastError") return null;
+      throw error;
+    });
 };
 
 const getPostForEdit = (id) => {
@@ -354,7 +358,11 @@ const createDraft = async ({ title, content, file, imageSource, userID }) => {
 const getDraftById = (id) => {
   return Post.findOne({ _id: id, status: PostStatus.DRAFT })
     .populate("creator", "username")
-    .populate("currentVersion", "title content -_id");
+    .populate("currentVersion", "title content -_id")
+    .catch((error) => {
+      if (error.name === "CastError") return null;
+      throw error;
+    });
 };
 
 const publishDraft = (id) => {
