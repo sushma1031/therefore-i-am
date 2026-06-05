@@ -32,7 +32,9 @@
       <div class="post-image">
         <img src="<%= imageURL %>" alt="post image">
       </div>
-      <p class="image-credit">Source: <%- imageSource %></p>
+      <% if (imageSource) { %>
+        <p class="image-credit">Source: <%- imageSource %></p>
+      <% } %>
     <% } %>
     <div class="post-content py-4 text-responsive">
       <%- content %>
