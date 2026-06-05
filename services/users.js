@@ -6,10 +6,23 @@ const findByEmail = (email) => {
   return User.findOne({ email });
 };
 
+const findById = (id, fields) => {
+  const opts = {};
+
+  for (let field of fields) {
+    opts[field] = 1;
+  }
+
+  return User.findById(id, opts);
+}
+
 const validatePassword = (plaintext, hash) => {
   return new Promise((resolve, reject) => {
     bcrypt.compare(plaintext, hash, (err, result) => {
-      if (err) return reject(err);
+      if (err) {
+        err.code = "PASSWORD_HASH_ERROR";
+        return reject(err);
+      }
       resolve(result);
     });
   });
@@ -70,4 +83,4 @@ const deleteUserById = async (id) => {
 
 };
 
-module.exports = { findByEmail, validatePassword, createUser, deleteUserById };
+module.exports = { findByEmail, validatePassword, createUser, deleteUserById, findById };

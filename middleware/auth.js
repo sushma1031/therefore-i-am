@@ -1,4 +1,4 @@
-const User = require("../database/models/User.js");
+const userService = require("../services/users.js");
 
 const redirectIfAuthenticated = (req, res, next) => {
   if (req.session && req.session.userId) {
@@ -6,22 +6,27 @@ const redirectIfAuthenticated = (req, res, next) => {
   } else next();
 };
 
-const authenticate = (req, res, next) => {
-  if (!req.session || !req.session.userId) return res.redirect("/login");
+const authenticate = async (req, res, next) => {
+  if (!req.session || !req.session.userId) {
+    const redirect = encodeURIComponent(req.originalUrl);
+    return res.redirect(`/login?redirect=${redirect}`);
+  }
 
-  User.findById(req.session.userId)
-    .then((user) => {
-      if (!user) {
-        return res.redirect("/login");
-      } else {
-        res.locals.username = user.username;
-        return next();
-      }
-    })
-    .catch((error) => {
-      console.log(error.message);
-      return res.redirect("/login");
+  try {
+    const user = await userService.findById(req.session.userId, ["username"]);
+    if (user) {
+      res.locals.username = user.username;
+      return next();
+    }
+
+    const redirect = encodeURIComponent(req.originalUrl);
+    return req.session.destroy(() => {
+      res.redirect(`/login?redirect=${redirect}`);
     });
+  } catch (error) {
+    console.error("Authentication middleware:", error);
+    next(error)
+  }
 };
 
 module.exports = { redirectIfAuthenticated, authenticate };

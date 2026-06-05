@@ -42,6 +42,15 @@ app.use((req, res) => {
   res.status(404).render("errors/404", { title: "Page Not Found" });
 });
 
+app.use((err, req, res, next) => {
+  console.error(`[Error] ${req.method} ${req.url}:`, err.stack);
+
+  const statusCode = err.statusCode || 500;
+  const message = err.message || "An unexpected error occurred on the server.";
+
+  res.status(statusCode).render("errors/500", { title: "Server Error", statusCode, message });
+});
+
 let server;
 
 async function startServer() {

@@ -15,33 +15,37 @@ const renderLogin = (req, res) => {
   res.render("login", { errorMessage: message });
 };
 
-const login = (req, res) => {
+const login = async (req, res) => {
   const { email, password } = req.body;
 
-  userService
-    .findByEmail(email)
-    .then((foundUser) => {
-      if (!foundUser) {
-        return res.redirect("/login?error=invalidcredentials");
-      }
-      userService
-        .validatePassword(password, foundUser.password)
-        .then((result) => {
-          if (result) {
-            req.session.userId = foundUser._id;
-            return res.redirect("/");
-          }
-          return res.redirect("/login?error=invalidcredentials");
-        })
-        .catch((err) => {
-          console.error("Bcrypt error:", err);
-          return res.redirect("/login?error=server");
-        });
-    })
-    .catch((error) => {
-      console.error(`Unexpected error while logging in user: ${email}:`, error);
-      res.redirect("/login?error=server");
-    });
+  try {
+    const user = await userService.findByEmail(email);
+
+    if (!user) {
+      return res.redirect("/login?error=invalidcredentials");
+    }
+
+    const isPasswdMatch = await userService.validatePassword(password, user.password);
+    if (!isPasswdMatch) {
+      return res.redirect("/login?error=invalidcredentials");
+    }
+
+    req.session.userId = user._id;
+
+    const redirectTo = req.query.redirect ? decodeURIComponent(req.query.redirect) : "/";
+    if (redirectTo.startsWith("/") && !redirectTo.startsWith("//")) {
+      return res.redirect(redirectTo);
+    }
+    return res.redirect("/");
+  } catch (error) {
+    if (error?.code === "PASSWORD_HASH_ERROR") {
+      console.error(`Hash and compare password (email: ${email}): ${error}`);
+      return res.redirect("/login?error=server");
+    }
+
+    console.error(`Unexpected error while logging in user: ${email}:`, error);
+    res.redirect("/login?error=server");
+  }
 };
 
 const logout = (req, res) => {
