@@ -16,9 +16,9 @@ const envSchema = z.object({
   CLOUDINARY_API_KEY: z.string(),
   CLOUDINARY_API_SECRET: z.string(),
   RENDER_API_KEY: z.string(),
-  ADMIN_EMAIL: z.string(),
   NODE_ENV: z.enum(["development", "production"]).default("development"),
   DEFAULT_POST_IMAGE_URL: z.string(),
+  ADMINS: z.string(),
 });
 
 const parsed = envSchema.safeParse(envVars);
@@ -34,7 +34,7 @@ const config = {
   env: parsed.data.NODE_ENV,
 
   sessionSecret: parsed.data.SESSION_SECRET,
-  adminEmail: parsed.data.ADMIN_EMAIL,
+  admins: parsed.data.ADMINS,
   defaultPostImage: {
     url: parsed.data.DEFAULT_POST_IMAGE_URL,
   },

@@ -184,13 +184,13 @@ p.navbar-brand {
     object-fit: cover;
     opacity: 1;
     transition-property: transform, opacity;
-    transition-duration: 225ms;
+    transition-duration: 250ms;
     transition-timing-function: ease-in-out;
 }
 
 .featured-image img:hover {
-    opacity: 0.75;
-    transform: scale(1.075);
+    opacity: 0.9;
+    transform: scale(1.05);
 }
 
 .featured-body {

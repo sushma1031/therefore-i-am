@@ -2,8 +2,6 @@
 
   <h1 class="title">Login</h1>
   <div class="container-fluid my-4">
-
-
     <div class="row">
       <div class="col-lg-8 pb-5 mx-auto">
         <% if(errorMessage) {%>
@@ -13,8 +11,7 @@
         <% } %>
         <div class="card">
           <div class="card-body">
-            <!-- Makes POST request to /login route -->
-            <form action="/login" method="POST">
+            <form action="" method="POST">
               <div class="form-floating mb-3">
                 <input type="email" class="form-control" id="email" name="email" placeholder="name@example.com" required>
                 <label for="email">Email address</label>
@@ -25,12 +22,8 @@
               </div>
               <button class="btn btn-dark" type="submit">Login</button>
             </form>
-            <hr>
-            <p style="text-align: center;">Don't have an account yet? <a href="/register">Register</a></p>
           </div>
-
         </div>
-
       </div>
     </div>
   </div>
