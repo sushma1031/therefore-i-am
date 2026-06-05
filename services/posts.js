@@ -198,7 +198,7 @@ const updatePost = async (id, fields, image) => {
       await session.abortTransaction();
     }
 
-    if (error.code === "NOT_FOUND") {
+    if (error?.code === "NOT_FOUND") {
       throw error;
     }
 

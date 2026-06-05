@@ -1,5 +1,6 @@
 const User = require("../database/models/User.js");
 const bcrypt = require("bcrypt");
+const mongoose = require("mongoose");
 
 const findByEmail = (email) => {
   return User.findOne({ email });
@@ -18,8 +19,55 @@ const createUser = ({ username, email, password }) => {
   return User.create({ username, email, password });
 };
 
-const deleteUserById = (id) => {
-  return User.findOneAndDelete({ _id: id });
+const deleteUserById = async (id) => {
+  let session;
+
+  try {
+    session = await mongoose.startSession();
+    session.startTransaction();
+    const opts = { session };
+
+    const activeUserCount = await User.countDocuments({}, opts);
+
+    if (activeUserCount <= 1) {
+      const error = new Error();
+      error.code = "CANNOT_DELETE_LAST_ADMIN";
+      throw error;
+    }
+
+    const result = await User.deleteOne({ _id: id }, opts);
+
+    if (result.deletedCount === 0) {
+      const error = new Error();
+      error.code = "NOT_FOUND";
+      throw error;
+    }
+
+    await session.commitTransaction();
+
+  } catch (error) {
+    if (session) {
+      await session.abortTransaction();
+    }
+
+    if (error?.code === "CANNOT_DELETE_LAST_ADMIN" || error?.code === "NOT_FOUND") {
+      throw error;
+    }
+
+    if (error.name === "CastError") {
+      const err = new Error();
+      err.code = "INVALID_ID";
+      throw err;
+    }
+
+    console.error(`User delete: ${id}`, error);
+    throw error;
+  } finally {
+    if (session) {
+      session.endSession();
+    }
+  }
+
 };
 
 module.exports = { findByEmail, validatePassword, createUser, deleteUserById };

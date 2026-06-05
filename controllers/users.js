@@ -39,7 +39,7 @@ const login = (req, res) => {
         });
     })
     .catch((error) => {
-      console.error(`Unexpected error while logging in user: ${email}`, error);
+      console.error(`Unexpected error while logging in user: ${email}:`, error);
       res.redirect("/login?error=server");
     });
 };
@@ -48,7 +48,7 @@ const logout = (req, res) => {
   if (req.session && req.session.userId) {
     req.session.destroy((err) => {
       if (err) {
-        console.error(`Error destroying session for user: ${req.session.userId}`, err);
+        console.error(`Destroy session for user: ${req.session.userId}:`, err);
       }
       res.clearCookie("connect.sid");
       res.redirect("/");
@@ -63,12 +63,12 @@ const deleteUser = async (req, res) => {
   if (!userID) {
     return res.status(400).render("errors/400", {
       statusCode: 400,
-      message: "User deletion error: No user ID provided.",
+      message: "No user ID provided.",
     });
   }
 
   if (userID !== req.session.userId) {
-    console.warn("Danger: User trying to delete different user's account.");
+    console.warn(`User ${req.session.userId} attempt to delete user: ${userID}.`);
     return res.status(403).render("errors/403", {
       statusCode: 403,
       message: "Forbidden action.",
@@ -76,23 +76,31 @@ const deleteUser = async (req, res) => {
   }
 
   try {
-    const user = await userService.deleteUserById(userID);
-    if (!user) {
-      console.warn(`Danger: User ${req.session.userId} tried to delete account ${userID}.`);
-      return res.status(404).render("errors/404", {
-        statusCode: 404,
-        message: "Invalid user provided.",
-      });
-    }
-    console.log(`User deletion successful: ${user.username} (${userID}).`);
+    await userService.deleteUserById(userID);
+    console.log(`User deletion successful: ${userID}.`);
+
     req.session.destroy((error) => {
       if (error) {
-        console.error(`User session deletion error: Error destroying session for user: ${userID}`, error);
+        console.error(`User session deletion: ${userID}:`, error);
       }
       res.redirect("/");
     });
   } catch (error) {
-    console.error(`Unexpected error while deleting user: ${userID}`, error);
+    if (error.code === "INVALID_ID" || error.code === "NOT_FOUND") {
+      return res.status(404).render("errors/404", {
+        statusCode: 404,
+        message: "User not found.",
+      });
+    }
+
+    if (error.code === "CANNOT_DELETE_LAST_ADMIN") {
+      return res.status(400).render("errors/400", {
+        statusCode: 400,
+        message: "Cannot delete the last remaining admin.",
+      });
+    }
+
+    console.error(`Unexpected error while deleting user: ${userID}:`, error);
     res.status(500).render("errors/500", {
       statusCode: 500,
       message: "An unexpected error occurred while deleting account.",
