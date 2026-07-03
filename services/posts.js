@@ -158,6 +158,9 @@ const updatePost = async (id, fields, image) => {
       }
       post.image.url = image.path;
       post.image.id = image.filename;
+    } else if (fields.deleteImage === "true") {
+      oldImageId = post.image?.id;
+      post.image = null;
     }
 
     session = await mongoose.startSession();
