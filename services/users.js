@@ -14,7 +14,7 @@ const findById = (id, fields) => {
   }
 
   return User.findById(id, opts);
-}
+};
 
 const validatePassword = (plaintext, hash) => {
   return new Promise((resolve, reject) => {
@@ -57,7 +57,6 @@ const deleteUserById = async (id) => {
     }
 
     await session.commitTransaction();
-
   } catch (error) {
     if (session) {
       await session.abortTransaction();
@@ -80,7 +79,10 @@ const deleteUserById = async (id) => {
       session.endSession();
     }
   }
-
 };
 
-module.exports = { findByEmail, validatePassword, createUser, deleteUserById, findById };
+const getUserCount = (id) => {
+  return User.countDocuments();
+};
+
+module.exports = { findByEmail, validatePassword, createUser, deleteUserById, findById, getUserCount };

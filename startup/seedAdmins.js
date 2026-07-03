@@ -1,10 +1,23 @@
 const config = require("../config.js");
-const userService = require("../services/users.js")
+const userService = require("../services/users.js");
 
-const seedAdmins = async() => {
+const seedAdmins = async () => {
+  if (config.admins.length === 0) {
+    const totalUsers = await userService.getUserCount();
+    if (totalUsers === 0) {
+      console.error("CRITICAL: No admins in DB and no admins provided for seeding.");
+      process.exit(1);
+    }
+
+    console.info("No admins provided, skipping seeding.");
+    return;
+  }
+
   const admins = config.admins.split(",");
+
   console.log("Starting admin seeding, count:", admins.length);
-  let added = 0, skipped = 0;
+  let added = 0,
+    skipped = 0;
 
   try {
     for (const admin of admins) {
@@ -29,6 +42,6 @@ const seedAdmins = async() => {
     console.error("Failed to seed admins:", error);
     throw error;
   }
-}
+};
 
 module.exports = seedAdmins;
