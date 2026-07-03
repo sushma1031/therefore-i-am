@@ -18,7 +18,7 @@ const envSchema = z.object({
   RENDER_API_KEY: z.string(),
   NODE_ENV: z.enum(["development", "production"]).default("development"),
   DEFAULT_POST_IMAGE_URL: z.string(),
-  ADMINS: z.string(),
+  ADMINS: z.string().default(""),
 });
 
 const parsed = envSchema.safeParse(envVars);
