@@ -1,6 +1,5 @@
 const multer = require("multer");
 const cloudinary = require("cloudinary").v2;
-const { CloudinaryStorage } = require("multer-storage-cloudinary");
 const config = require("../config");
 
 cloudinary.config({
@@ -9,13 +8,35 @@ cloudinary.config({
   api_secret: config.cloudinary.apiSecret,
 });
 
-const storage = new CloudinaryStorage({
-  cloudinary: cloudinary,
-  params: {
-    folder: "tia-blog-images",
-    allowedFormats: ["jpg", "png"],
-    transformation: [{ width: 1280, height: 720, crop: "fill" }],
-  },
-});
+const storage = {
+  _handleFile(req, file, callback) {
+    const uploadStream = cloudinary.uploader.upload_stream(
+      {
+        folder: "tia-blog-images",
+        allowed_formats: ["jpg", "png"],
+        transformation: [{ width: 1280, height: 720, crop: "fill" }],
+      },
+      (error, result) => {
+        if (error) return callback(error);
 
-module.exports = multer({ storage: storage });
+        callback(null, {
+          path: result.secure_url,
+          filename: result.public_id,
+          size: result.bytes,
+        });
+      },
+    );
+
+    file.stream.pipe(uploadStream);
+  },
+
+  _removeFile(req, file, callback) {
+    cloudinary.uploader.destroy(
+      file.filename,
+      { invalidate: true },
+      (error, _) => callback(error),
+    );
+  },
+};
+
+module.exports = multer({ storage });
